@@ -1,0 +1,16 @@
+getUserById:
+  desc: |
+    params : userId(str)
+    result : 사용자 아이디에 대한 사용자 정보
+  query: |
+    SELECT *
+    FROM users
+    WHERE id = :userId
+getEquipBySiteSq:
+  desc: |
+    parameters: siteSq(str)
+    result: 사이트의 설비 리스트
+  query: |
+    SELECT *
+    FROM users
+    WHERE id = :userId

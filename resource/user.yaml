@@ -1,0 +1,20 @@
+get_user:
+  desc:
+    params: |
+      user_id(str)
+    result: |
+      사용자 아이디의 사용자 정보
+  query: |
+    SELECT GROUP_SQ, SITE_SQ, USER_SQ, ROLL_CD, USER_NM,
+    FROM TB_M1_INFO_USER_BASE
+    WHERE USER_ID  = :user_id
+update_last_login:
+  desc:
+    params: |
+      user_id(str)
+    result: |
+      사용자 아이디의 접속 시간 업데이트
+  query: |
+    UPDATE users 
+    SET last_login = SYSDATE 
+    WHERE id = :user_id

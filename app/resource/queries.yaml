@@ -1,0 +1,21 @@
+auth_queries:
+  find_user: |
+    SELECT USER_ID, USER_PWD, USER_NM, GROUP_SQ, SITE_SQ, USER_SQ, ROLL_CD
+    FROM TB_M1_INFO_USER_BASE
+    WHERE USER_ID  = :user_id
+
+user_queries:
+  get_user: |
+    SELECT GROUP_SQ, SITE_SQ, USER_SQ, ROLL_CD, USER_NM,
+    FROM TB_M1_INFO_USER_BASE
+    WHERE USER_ID  = :user_id
+  update_last_login: |
+    UPDATE users 
+    SET last_login = SYSDATE 
+    WHERE id = :user_id
+
+equip_queries:
+  rsvr_list_by_site_sq: |
+    SELECT * FROM VI_SV_INFO_EQUIP_RSVR
+    WHERE SITE_SQ = :site_sq
+    ORDER BY EQUIP_NM

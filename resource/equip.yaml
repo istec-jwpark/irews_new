@@ -1,0 +1,31 @@
+rsvr_list_by_site_sq:
+  desc:
+    params: |
+      site_sq(str)
+    result: |
+      사이트 시퀀스의 설비 정보
+  query: |
+    SELECT * FROM VI_SV_INFO_EQUIP_RSVR
+    WHERE SITE_SQ = :site_sq
+    ORDER BY EQUIP_NM
+
+rsvr_current_list_by_site_sq:
+  desc:
+    params: |
+      site_sq(str)
+    result: |
+      사이트 시퀀스의 실시간 설비 정보
+  query: |
+    SELECT * FROM VI_SV_MEAS_EQUIP_RSVR_C
+    WHERE SITE_SQ = :site_sq
+    ORDER BY EQUIP_NM
+
+rsvr_current_by_point_sq:
+  desc:
+    params: |
+      point_sq(str)
+    result: |
+      포인트 시퀀스의 실시간 설비 정보
+  query: |
+    SELECT * FROM VI_SV_MEAS_EQUIP_RSVR_C
+    WHERE POINT_SQ = :point_sq
