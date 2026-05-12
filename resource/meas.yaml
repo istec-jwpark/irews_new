@@ -1,0 +1,323 @@
+meas_cur_rsvr:
+  desc:
+    params: |
+      siteSq(str)
+    result: |
+      저수지 실시간 측정 데이터
+  query: |
+    SELECT
+      point_sq as "pointSq",
+      point_gb as "pointGb",
+      group_sq as "groupSq",
+      equip_sq as "equipSq",
+      equip_nm as "equipNm",
+      obs_date as "obsDate",
+      obs_lvl as "obsWlvl",
+      obs_rat as "obsRat",
+      bef_crvlm as "befCrvlm",
+      bef_efvlm as "befEfvlm",
+      obs_solar as "obsSola",
+      obs_batt as "obsBatt",
+      obs_temp as "obsTemp",
+      obs_vlm as "obsVlm",
+      eff_vlm as "effVlm",
+      rcv_date as "updDate",
+      obs_rat_stat as "obsStat",
+      obs_valid as "obsValid"
+    FROM VI_SV_MEAS_EQUIP_RSVR_C
+    WHERE site_sq = :siteSq
+    ORDER BY equip_nm
+
+meas_cur_wway:
+  desc:
+    params: |
+      siteSq(str)
+    result: |
+      수로 실시간 측정 데이터
+  query: |
+    SELECT
+      point_sq as "pointSq",
+      point_gb as "pointGb",
+      group_sq as "groupSq",
+      equip_sq as "equipSq",
+      equip_nm as "equipNm",
+      obs_date as "obsDate",
+      obs_wlvl as "obsWlvl",
+      obs_ratio as "obsRat",
+      obs_insfl as "obsInsfl",
+      obs_secfl as "obsSecfl",
+      obs_batt1 as "obsBatt",
+      obs_batt2 as "obsSola",
+      obs_temp as "obsTemp",
+      ins_date as "insDate",
+      upd_date as "updDate",
+      obs_stat as "obsStat",
+      obs_valid as "obsValid"
+    FROM VI_SV_MEAS_EQUIP_WWAY_C
+    WHERE site_sq = :siteSq
+    ORDER BY equip_nm
+
+meas_raw_rsvr:
+  desc:
+    params: |
+      equipSq(str)
+      begDate(str)
+      endDate(str)
+    result: |
+      저수지 원시 측정 데이터
+  query: |
+    SELECT
+      EQUIP_SQ AS "equipSq",
+      OBS_DATE AS "obsDate",
+      EFF_VLM AS "effVlm",
+      OBS_VLM AS "obsVlm",
+      OBS_RAT AS "obsRat",
+      OBS_LVL AS "obsWlvl",
+      OBS_TEMP AS "obsTemp",
+      OBS_RAIN AS "obsRain",
+      obs_solar as "obsSola",
+      OBS_BATT AS "obsBatt",
+      RCV_DATE AS "rcvDate"
+    FROM VI_SV_MEAS_EQUIP_RSVR_A
+    WHERE EQUIP_SQ = :equipSq
+      AND OBS_DATE >= to_date(:begDate, 'yyyymmdd')
+      AND OBS_DATE < (to_date(:endDate, 'yyyymmdd') + 1)
+    ORDER BY OBS_DATE DESC
+
+meas_hour_rsvr:
+  desc:
+    params: |
+      equipSq(str)
+      begDate(str)
+      endDate(str)
+    result: |
+      저수지 시간별 측정 데이터
+  query: |
+    SELECT
+      EQUIP_SQ as "equipSq",
+      OBS_DATE as "obsDate",
+      EFF_VLM as "effVlm",
+      OBS_VLM as "obsVlm",
+      OBS_VLM_MAX as "obsVlmMax",
+      OBS_VLM_MIN as "obsVlmMin",
+      round(OBS_VLM/EFF_VLM*100, 2) as "obsRat",
+      round(OBS_VLM_MAX/EFF_VLM*100, 2) as "obsRatMax",
+      round(OBS_VLM_MIN/EFF_VLM*100, 2) as "obsRatMin",
+      OBS_LVL as "obsWlvl",
+      OBS_LVL_MAX as "obsWlvlMax",
+      OBS_LVL_Min as "obsWlvlMin",
+      OBS_TEMP as "obsTemp",
+      OBS_RAIN as "obsRain",
+      obs_SOLAR as "obsSola",
+      OBS_BATT as "obsBatt",
+      OBS_BATT_MAX as "obsBattMax",
+      OBS_BATT_MIN as "obsBattMin"
+    FROM VI_SV_MEAS_EQUIP_RSVR_H
+    WHERE EQUIP_SQ = :equipSq
+      AND OBS_DATE >= to_date(:begDate, 'yyyymmdd')
+      AND OBS_DATE < (to_date(:endDate, 'yyyymmdd') + 1)
+    ORDER BY OBS_DATE DESC
+
+meas_day_rsvr:
+  desc:
+    params: |
+      equipSq(str)
+      begDate(str)
+      endDate(str)
+    result: |
+      저수지 일별 측정 데이터
+  query: |
+    SELECT
+      EQUIP_SQ as "equipSq",
+      OBS_DATE as "obsDate",
+      EFF_VLM as "effVlm",
+      OBS_VLM as "obsVlm",
+      OBS_VLM_MAX as "obsVlmMax",
+      OBS_VLM_MIN as "obsVlmMin",
+      round(OBS_VLM/EFF_VLM*100, 2) as "obsRat",
+      round(OBS_VLM_MAX/EFF_VLM*100, 2) as "obsRatMax",
+      round(OBS_VLM_MIN/EFF_VLM*100, 2) as "obsRatMin",
+      OBS_LVL as "obsWlvl",
+      OBS_LVL_MAX as "obsWlvlMax",
+      OBS_LVL_Min as "obsWlvlMin",
+      OBS_TEMP as "obsTemp",
+      OBS_RAIN as "obsRain",
+      obs_SOLAR as "obsSola",
+      OBS_BATT as "obsBatt",
+      OBS_BATT_MAX as "obsBattMax",
+      OBS_BATT_MIN as "obsBattMin"
+    FROM VI_SV_MEAS_EQUIP_RSVR_D
+    WHERE EQUIP_SQ = :equipSq
+      AND OBS_DATE BETWEEN to_date(:begDate, 'yyyymmdd')
+      AND to_date(:endDate, 'yyyymmdd')
+    ORDER BY OBS_DATE DESC
+
+meas_month_rsvr:
+  desc:
+    params: |
+      equipSq(str)
+      begDate(str)
+      endDate(str)
+    result: |
+      저수지 월별 측정 데이터
+  query: |
+    SELECT
+      EQUIP_SQ as "equipSq",
+      OBS_DATE as "obsDate",
+      EFF_VLM as "effVlm",
+      OBS_VLM as "obsVlm",
+      OBS_VLM_MAX as "obsVlmMax",
+      OBS_VLM_MIN as "obsVlmMin",
+      round(OBS_VLM/EFF_VLM*100, 2) as "obsRat",
+      round(OBS_VLM_MAX/EFF_VLM*100, 2) as "obsRatMax",
+      round(OBS_VLM_MIN/EFF_VLM*100, 2) as "obsRatMin",
+      OBS_LVL as "obsWlvl",
+      OBS_LVL_MAX as "obsWlvlMax",
+      OBS_LVL_Min as "obsWlvlMin",
+      OBS_TEMP as "obsTemp",
+      OBS_RAIN as "obsRain",
+      obs_SOLAR as "obsSola",
+      OBS_BATT as "obsBatt",
+      OBS_BATT_MAX as "obsBattMax",
+      OBS_BATT_MIN as "obsBattMin"
+    FROM VI_SV_MEAS_EQUIP_RSVR_M
+    WHERE EQUIP_SQ = :equipSq
+      AND OBS_DATE BETWEEN trunc(to_date(:begDate, 'yyyymmdd'), 'mm')
+      AND trunc(to_date(:endDate, 'yyyymmdd'), 'mm')
+    ORDER BY OBS_DATE DESC
+
+meas_raw_wway:
+  desc:
+    params: |
+      equipSq(str)
+      begDate(str)
+      endDate(str)
+    result: |
+      수로 원시 데이터
+  query: |
+    SELECT
+      EQUIP_SQ as "equipSq",
+      OBS_DATE as "obsDate",
+      OBS_TERM as "obsTerm",
+      OBS_WLVL as "obsWlvl",
+      OBS_FRATE as "obsFrate",
+      OBS_INSFL as "obsInsfl",
+      OBS_SECFL as "obsSecfl",
+      OBS_TEMP as "obsTemp",
+      OBS_RAIN as "obsRain",
+      OBS_BATT as "obsBatt",
+      OBS_SOLA as "obsSola",
+      RCV_DATE as "rcvDate"
+    FROM VI_SV_MEAS_EQUIP_WWAY_A
+    WHERE EQUIP_SQ = :equipSq
+      AND OBS_DATE >= to_date(:begDate, 'yyyymmdd')
+      AND OBS_DATE < (to_date(:endDate, 'yyyymmdd') + 1)
+    ORDER BY OBS_DATE DESC
+
+meas_hour_wway:
+  desc:
+    params: |
+      equipSq(str)
+      begDate(str)
+      endDate(str)
+    result: |
+      수로 시간별 데이터
+  query: |
+    SELECT
+      EQUIP_SQ as "equipSq",
+      OBS_DATE as "obsDate",
+      OBS_CNT as "obsCnt",
+      OBS_SECFL as "obsSecfl",
+      OBS_RAIN as "obsRain",
+      OBS_INSFL as "obsInsfl",
+      OBS_INSFL_MAX as "obsInsflMax",
+      OBS_INSFL_MIN as "obsInsflMin",
+      OBS_WLVL as "obsWlvl",
+      OBS_WLVL_MAX as "obsWlvlMax",
+      OBS_WLVL_MIN as "obsWlvlMin",
+      OBS_TEMP as "obsTemp",
+      OBS_TEMP_MAX as "obsTempMax",
+      OBS_TEMP_MIN as "obsTempMin",
+      OBS_BATT as "obsBatt",
+      OBS_BATT_MAX as "obsBattMax",
+      OBS_BATT_MIN as "obsBattMin",
+      OBS_SOLA as "obsSola",
+      OBS_SOLA_MAX as "obsSolaMax",
+      OBS_SOLA_MIN as "obsSolaMin"
+    FROM VI_SV_MEAS_EQUIP_WWAY_H
+    WHERE EQUIP_SQ = :equipSq
+      AND OBS_DATE >= to_date(:begDate, 'yyyymmdd')
+      AND OBS_DATE < (to_date(:endDate, 'yyyymmdd') + 1)
+    ORDER BY OBS_DATE DESC
+
+meas_day_wway:
+  desc:
+    params: |
+      equipSq(str)
+      begDate(str)
+      endDate(str)
+    result: |
+      수로 일별 데이터
+  query: |
+    SELECT
+      EQUIP_SQ as "equipSq",
+      OBS_DATE as "obsDate",
+      OBS_CNT as "obsCnt",
+      OBS_SECFL as "obsSecfl",
+      OBS_RAIN as "obsRain",
+      OBS_INSFL as "obsInsfl",
+      OBS_INSFL_MAX as "obsInsflMax",
+      OBS_INSFL_MIN as "obsInsflMin",
+      OBS_WLVL as "obsWlvl",
+      OBS_WLVL_MAX as "obsWlvlMax",
+      OBS_WLVL_MIN as "obsWlvlMin",
+      OBS_TEMP as "obsTemp",
+      OBS_TEMP_MAX as "obsTempMax",
+      OBS_TEMP_MIN as "obsTempMin",
+      OBS_BATT as "obsBatt",
+      OBS_BATT_MAX as "obsBattMax",
+      OBS_BATT_MIN as "obsBattMin",
+      OBS_SOLA as "obsSola",
+      OBS_SOLA_MAX as "obsSolaMax",
+      OBS_SOLA_MIN as "obsSolaMin"
+    FROM VI_SV_MEAS_EQUIP_WWAY_D
+    WHERE EQUIP_SQ = :equipSq
+      AND OBS_DATE BETWEEN to_date(:begDate, 'yyyymmdd')
+      AND to_date(:endDate, 'yyyymmdd')
+    ORDER BY OBS_DATE DESC
+
+meas_month_wway:
+  desc:
+    params: |
+      equipSq(str)
+      begDate(str)
+      endDate(str)
+    result: |
+      수로 월별 데이터
+  query: |
+    SELECT
+      EQUIP_SQ as "equipSq",
+      OBS_DATE as "obsDate",
+      OBS_CNT as "obsCnt",
+      OBS_SECFL as "obsSecfl",
+      OBS_RAIN as "obsRain",
+      OBS_INSFL as "obsInsfl",
+      OBS_INSFL_MAX as "obsInsflMax",
+      OBS_INSFL_MIN as "obsInsflMin",
+      OBS_WLVL as "obsWlvl",
+      OBS_WLVL_MAX as "obsWlvlMax",
+      OBS_WLVL_MIN as "obsWlvlMin",
+      OBS_TEMP as "obsTemp",
+      OBS_TEMP_MAX as "obsTempMax",
+      OBS_TEMP_MIN as "obsTempMin",
+      OBS_BATT as "obsBatt",
+      OBS_BATT_MAX as "obsBattMax",
+      OBS_BATT_MIN as "obsBattMin",
+      OBS_SOLA as "obsSola",
+      OBS_SOLA_MAX as "obsSolaMax",
+      OBS_SOLA_MIN as "obsSolaMin"
+    FROM VI_SV_MEAS_EQUIP_WWAY_M
+    WHERE EQUIP_SQ = :equipSq
+      AND OBS_DATE BETWEEN trunc(to_date(:begDate, 'yyyymmdd'), 'mm')
+      AND trunc(to_date(:endDate, 'yyyymmdd'), 'mm')
+    ORDER BY OBS_DATE DESC

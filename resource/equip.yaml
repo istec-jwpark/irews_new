@@ -1,31 +1,289 @@
-rsvr_list_by_site_sq:
+scco_list:
   desc:
     params: |
-      site_sq(str)
+      siteSq(str)
     result: |
-      사이트 시퀀스의 설비 정보
+      사이트 목록 조회
   query: |
-    SELECT * FROM VI_SV_INFO_EQUIP_RSVR
-    WHERE SITE_SQ = :site_sq
-    ORDER BY EQUIP_NM
+    SELECT
+      site_sq as "siteSq",
+      site_nm as "siteNm",
+      scco_cd as "sccoCd"
+    FROM TB_M1_INFO_SITE_BASE
+    WHERE site_sq = :siteSq
 
-rsvr_current_list_by_site_sq:
+point_base_list:
   desc:
     params: |
-      site_sq(str)
+      siteSq(str)
     result: |
-      사이트 시퀀스의 실시간 설비 정보
+      측정 포인트 정보
   query: |
-    SELECT * FROM VI_SV_MEAS_EQUIP_RSVR_C
-    WHERE SITE_SQ = :site_sq
-    ORDER BY EQUIP_NM
+    SELECT
+      SITE_SQ as "siteSq",
+      POINT_SQ as "pointSq",
+      POINT_GB as "pointGb",
+      POINT_NM as "pointNm",
+      GROUP_SQ as "groupSq",
+      MODEM_NO as "modemNo",
+      ADD_CD as "addCd",
+      ADD_STR1 as "addS1",
+      ADD_STR2 as "addS2",
+      LOC_LON as "locLon",
+      LOC_LAT as "locLat",
+      ACT_CD as "actCd",
+      ACT_DT as "actDate",
+      UPD_DT as "updDate",
+      INS_DT as "insDate"
+    FROM VI_SV_INFO_POINT_BASE
+    WHERE site_sq = :siteSq
+    ORDER BY POINT_NM
 
-rsvr_current_by_point_sq:
+equip_rsvr_list:
   desc:
     params: |
-      point_sq(str)
+      siteSq(str)
     result: |
-      포인트 시퀀스의 실시간 설비 정보
+      저수지 설비 목록
   query: |
-    SELECT * FROM VI_SV_MEAS_EQUIP_RSVR_C
-    WHERE POINT_SQ = :point_sq
+    SELECT
+      site_sq as "siteSq",
+      point_sq as "pointSq",
+      equip_sq as "equipSq",
+      equip_sq as "equipNo",
+      EQUIP_ID as "equipId",
+      equip_nm as "equipNm",
+      group_sq as "groupSq",
+      kind_code as "kindCd",
+      active_code as "actCd",
+      active_date as "actDate",
+      equip_install_date as "setDate",
+      ITEM_WLVLMIN as "minLvl",
+      ITEM_WLVLMAX as "maxLvl",
+      ITEM_PONDAGE_TOTAL as "totVlm",
+      ITEM_PONDAGE_VALID_POLYNOM as "effVlm"
+    FROM VI_SV_INFO_EQUIP_RSVR
+    WHERE active_code != '9'
+      AND site_sq = :siteSq
+    ORDER BY equip_nm
+
+equip_wway_list:
+  desc:
+    params: |
+      siteSq(str)
+    result: |
+      수로 설비 목록
+  query: |
+    SELECT
+      site_sq as "siteSq",
+      point_sq as "pointSq",
+      equip_sq as "equipSq",
+      equip_sq as "equipNo",
+      equip_id as "equipId",
+      equip_nm as "equipNm",
+      group_sq as "groupSq",
+      kind_code as "kindCd",
+      wlvl_max as "maxWlvl",
+      wlvl_min as "minWlvl",
+      active_code as "actCd",
+      active_date as "actDate",
+      install_date as "setDate"
+    FROM VI_SV_INFO_EQUIP_WWAY
+    WHERE active_code != '9'
+      AND site_sq = :siteSq
+    ORDER BY equip_nm
+
+info_look_rsvr:
+  desc:
+    params: |
+      equipSq(str)
+    result: |
+      저수지 용량 정보
+  query: |
+    SELECT
+      equip_sq as "equipSq",
+      vlm_tot as "totVlm",
+      vlm_ef0 as "ef0Vlm",
+      vlm_ef1 as "ef1Vlm",
+      lvl_max as "maxLvl",
+      lvl_min as "minLvl",
+      lvl_bot as "botLvl",
+      '03' as "regType",
+      reg_deg as "regDeg",
+      reg_c0 as "regC0",
+      reg_c1 as "regC1",
+      reg_c2 as "regC2",
+      reg_c3 as "regC3"
+    FROM VI_SV_INFO_LOOK_RSVR
+    WHERE EQUIP_SQ = :equipSq
+
+admin_list:
+  desc:
+    params: |
+      siteSq(str)
+    result: |
+      관리자 목록
+  query: |
+    SELECT
+      a.ADMIN_SQ as "adminSq",
+      a.EQUIP_NO as "equipNo",
+      c.EQUIP_NAME as "equipNm",
+      c.EQUIP_STANDARD_CODE as "stdCode",
+      a.ADMIN_NM as "adminNm",
+      a.ADMIN_PHONE as "adminPhone",
+      a.SEND_CD as "sendCd",
+      a.SITE_SQ as "siteSq",
+      b.FLOOD as "flood",
+      b.DROUGHT as "drought",
+      e.OBS_WLVL as "obsWlvl",
+      e.OBS_RATIO as "obsRatio",
+      a.INS_DT as "insDt",
+      a.UPD_DT as "updDt"
+    FROM TB_M1_INFO_ADMIN a
+    JOIN TB_EQUIP_INFO_BASE c ON c.EQUIP_NO = a.EQUIP_NO
+    LEFT JOIN TB_M1_SMS_SETTING b ON a.EQUIP_NO = b.EQUIP_NO AND a.SITE_SQ = b.SITE_SQ
+    LEFT JOIN TB_M1_MEAS_RSVR_NOW e ON e.EQUIP_NO = c.EQUIP_NO
+    WHERE a.SITE_SQ = :siteSq
+    ORDER BY a.EQUIP_NO
+
+sms_setting:
+  desc:
+    params: |
+      siteSq(str)
+    result: |
+      SMS 설정 조회
+  query: |
+    SELECT
+      a.SITE_SQ as "siteSq",
+      a.EQUIP_NO as "equipNo",
+      b.EQUIP_NAME as "equipNm",
+      a.FLOOD as "flood",
+      a.DROUGHT as "drought"
+    FROM TB_M1_SMS_SETTING a
+    RIGHT JOIN TB_EQUIP_INFO_BASE b ON a.EQUIP_NO = b.EQUIP_NO
+    JOIN TB_M1_INFO_POINT_BASE c ON c.POINT_SQ = b.POINT_SQ
+    WHERE c.SITE_SQ = :siteSq
+
+equip_image_list:
+  desc:
+    params: |
+      equipSq(str)
+      begDate(str)
+      endDate(str)
+    result: |
+      설비 이미지 목록
+  query: |
+    SELECT
+      row_sq as "imgSq",
+      equip_no as "equipSq",
+      obs_date as "obsDt",
+      obs_chno as "obsCh",
+      dbms_lob.getlength(obs_img) as "imgSz",
+      upd_date as "updDt"
+    FROM TB_M1_MEAS_IMG_RAW
+    WHERE equip_no = :equipSq
+      AND obs_date BETWEEN to_date(:begDate, 'yyyymmdd')
+      AND (to_date(:endDate, 'yyyymmdd')+1)
+    ORDER BY obs_date DESC
+
+get_cam_image:
+  desc:
+    params: |
+      imgSq(str)
+    result: |
+      이미지 BLOB 조회
+  query: |
+    SELECT obs_img
+    FROM TB_M1_MEAS_IMG_RAW
+    WHERE row_sq = :imgSq
+
+rscvr_raw:
+  desc:
+    params: |
+      equipSc(str)
+      baseDate(str)
+    result: |
+      원시 측정 데이터
+  query: |
+    SELECT
+      b.EQUIP_STANDARD_CODE || b.EQUIP_SUB_ID as "equipSc",
+      d.SITE_NM as "siteNm",
+      c.EQUIP_NAME as "equipNm",
+      a.OBS_DATE as "obsDate",
+      a.INS_DATE as "insDt",
+      a.OBS_WLVL as "obsWlvl",
+      a.OBS_RATIO as "obsRatio",
+      a.OBS_BATT1 as "obsBatt1",
+      a.OBS_BATT2 as "obsBatt2",
+      a.OBS_TEMP as "obsTemp"
+    FROM TB_M1_MEAS_RSVR_RAW a
+    JOIN TB_EQUIP_INFO_BASE_LORA b ON b.EQUIP_NO = a.EQUIP_NO
+    JOIN TB_EQUIP_INFO_BASE c ON c.EQUIP_NO = b.EQUIP_NO
+    JOIN TB_M1_INFO_SITE_BASE d ON d.GROUP_SQ = c.GROUP_SQ
+    WHERE b.EQUIP_STANDARD_CODE LIKE '%' || :equipSc || '%'
+      AND b.EQUIP_SUB_ID = '00'
+      AND a.OBS_DATE < to_date(:baseDate, 'yyyymmdd') + 1
+    ORDER BY a.OBS_DATE DESC
+
+point_list2:
+  desc:
+    params: |
+      groupSq(str)
+    result: |
+      상세 설비 및 측정 정보
+  query: |
+    SELECT *
+    FROM TB_EQUIP_INFO_BASE_LORA a
+    JOIN TB_EQUIP_INFO_BASE b ON b.equip_no = a.equip_no
+    LEFT JOIN TB_EQUIP_INFO_DETAIL_RESERVOIR c ON c.EQUIP_NO = b.EQUIP_NO
+    LEFT JOIN TB_M1_CMAP_LORA d ON d.EQUIP_NO = b.EQUIP_NO
+    JOIN TB_M1_INFO_SITE_BASE e ON e.GROUP_SQ = b.GROUP_SQ
+    LEFT JOIN TB_M1_MEAS_RSVR_NOW f ON f.EQUIP_NO = b.EQUIP_NO
+    WHERE e.GROUP_SQ = :groupSq
+    ORDER BY b.EQUIP_NO
+
+site_list:
+  desc:
+    params: |
+      없음
+    result: |
+      사이트 목록
+  query: |
+    SELECT *
+    FROM TB_M1_INFO_SITE_BASE
+
+lora_list:
+  desc:
+    params: |
+      없음
+    result: |
+      LoRa 정보 목록
+  query: |
+    SELECT
+      a.DEV_EUI as "devEui",
+      a.APP_EUI as "appEui",
+      a.SUBS_IP as "ip",
+      a.DOWN_LINK_GET_IP as "getIp",
+      a.DOWN_LINK_SET_IP as "setIp",
+      a.UKEY as "ukey",
+      a.DKEY as "dkey",
+      a.OM2M_REG_STATE as "om2mRegSt",
+      a.SUBS_LAST_RSM as "lastRms",
+      a.EQUIP_NO as "equipNo",
+      b.EQUIP_NAME as "equipNm"
+    FROM TB_M1_CMAP_LORA a
+    LEFT JOIN TB_EQUIP_INFO_BASE b ON a.EQUIP_NO = b.EQUIP_NO
+    ORDER BY a.DEV_EUI
+
+is_lora_mapped:
+  desc:
+    params: |
+      equipNo(str)
+    result: |
+      LoRa 매핑 여부
+  query: |
+    SELECT
+      APP_EUI as "eAppEui",
+      DEV_EUI as "eDevEui"
+    FROM TB_M1_CMAP_LORA
+    WHERE EQUIP_NO = :equipNo

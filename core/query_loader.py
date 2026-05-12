@@ -6,10 +6,10 @@ class QueryLoader:
     _queries = {}
 
     @classmethod
-    def load_queries(cls):
+    def load_queries(cls, query_folder='resource'):
         # querie yaml 파일 경로 설정
         logger.info("###### load queries ######")
-        base = Path(__file__).parent.parent / "resource"
+        base = Path(__file__).parent.parent / query_folder
         for path in base.glob("*.yaml"):
             logger.info(path)
             with open(path, "r", encoding="utf-8") as f:
@@ -18,8 +18,20 @@ class QueryLoader:
         logger.info("###### load queries ######")
 
     @classmethod
-    def get(cls, category: str, key: str) -> str:
-        return cls._queries.get(category, {}).get(key,{}).get('query')
+    def get_type(cls, category:str, key: str) -> bool:
+        _type = cls._queries.get(category, {}).get(key,{}).get('type')
+        if not _type:
+            _type = "query"
+        return _type.strip()
+
+    @classmethod
+    def get_query(cls, category: str, key: str) -> str:
+        return cls._queries.get(category.strip(), {}).get(key.strip(),{}).get('query')
+    
+    @classmethod
+    def get_def(cls, category:str, key: str) -> bool:
+        print(category,key)
+        return cls._queries.get(category.strip(), {}).get(key.strip(),{}).get('def')
 
     @classmethod
     def desc(cls, category: str, key: str) -> str:
@@ -27,9 +39,8 @@ class QueryLoader:
     
     @classmethod
     def list(cls):
-        query_list = {}
+        _list = {}
         for category in cls._queries:
-            query_list[category] = list(cls._queries[category].keys())
-        return query_list
-# 앱 가동 시 호출
-QueryLoader.load_queries()
+            if category != 'auth':
+                _list[category] = list(cls._queries.get(category,{}).keys())
+        return _list

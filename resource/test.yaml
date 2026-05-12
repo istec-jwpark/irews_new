@@ -1,0 +1,13 @@
+equip_list:
+  type: |
+    def
+  desc:
+    params: |
+      siteSq(str), activeCode(str)
+    result: |
+      사이트 목록 조회(두파라미터 모두 필수가 아님)
+  query: |
+    SELECT * FROM TB_EQUIP_INFO_BASE E JOIN TB_M1_INFO_POINT_BASE P ON E.POINT_SQ = P.SITE_SQ
+    WHERE SITE_SQ = :siteSq AND ACTIVE_CODE = :activeCode
+  def : |
+    test.test

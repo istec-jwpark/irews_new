@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from core.database import db_manager
 from core.query_loader import QueryLoader
+from core.service_loader import ServiceLoader
+# from core.filter_loader import FilterLoader
 from core.config import settings
 from core.logger import log_middleware
 from api import auth_api
@@ -19,8 +21,13 @@ async def lifespan(app: FastAPI):
     # [Startup] 앱 시작 시 실행
     db_manager.initialize()
     QueryLoader.load_queries()
-    logger.info(QueryLoader.get("equip","rsvr_list_by_site_sq"))
-    logger.info("🚀 Database pool initialized and queries loaded.")
+    logger.info(QueryLoader.get_query("equip","rsvr_list_by_site_sq"))
+    ServiceLoader.load_services()
+    logger.info(ServiceLoader.run("test.test",{"a":"a"}))
+    # FilterLoader.load_filter()
+    # logger.info(FilterLoader.run("equip","test",{"a":"a"}))
+    logger.info("🚀 Database pool initialized, queries/services loaded.")
+
     yield
     # [Shutdown] 앱 종료 시 실행
     db_manager.close()
