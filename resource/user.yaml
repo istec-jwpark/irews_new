@@ -18,6 +18,35 @@ get_user:
     JOIN TB_M1_INFO_SITE_BASE b ON a.site_sq = b.site_sq
     WHERE a.user_id = :user_id
 
+admin_list:
+  desc:
+    params: |
+      siteSq(str)
+    result: |
+      관리자 목록
+  query: |
+    SELECT
+      a.ADMIN_SQ as "adminSq",
+      a.EQUIP_NO as "equipNo",
+      c.EQUIP_NAME as "equipNm",
+      c.EQUIP_STANDARD_CODE as "stdCode",
+      a.ADMIN_NM as "adminNm",
+      a.ADMIN_PHONE as "adminPhone",
+      a.SEND_CD as "sendCd",
+      a.SITE_SQ as "siteSq",
+      b.FLOOD as "flood",
+      b.DROUGHT as "drought",
+      e.OBS_WLVL as "obsWlvl",
+      e.OBS_RATIO as "obsRatio",
+      a.INS_DT as "insDt",
+      a.UPD_DT as "updDt"
+    FROM TB_M1_INFO_ADMIN a
+    JOIN TB_EQUIP_INFO_BASE c ON c.EQUIP_NO = a.EQUIP_NO
+    LEFT JOIN TB_M1_SMS_SETTING b ON a.EQUIP_NO = b.EQUIP_NO AND a.SITE_SQ = b.SITE_SQ
+    LEFT JOIN TB_M1_MEAS_RSVR_NOW e ON e.EQUIP_NO = c.EQUIP_NO
+    WHERE a.SITE_SQ = :siteSq
+    ORDER BY a.EQUIP_NO
+
 update_last_login:
   desc:
     params: |

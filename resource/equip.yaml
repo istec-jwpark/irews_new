@@ -1,9 +1,42 @@
-scco_list:
+site_all_list:
+  desc:
+    params: |
+      없음
+    result: |
+      사이트 목록(site_list)
+  query: |
+    SELECT *
+    FROM TB_M1_INFO_SITE_BASE
+
+lora_list:
+  desc:
+    params: |
+      없음
+    result: |
+      LoRa 정보 목록
+  query: |
+    SELECT
+      a.DEV_EUI as "devEui",
+      a.APP_EUI as "appEui",
+      a.SUBS_IP as "ip",
+      a.DOWN_LINK_GET_IP as "getIp",
+      a.DOWN_LINK_SET_IP as "setIp",
+      a.UKEY as "ukey",
+      a.DKEY as "dkey",
+      a.OM2M_REG_STATE as "om2mRegSt",
+      a.SUBS_LAST_RSM as "lastRms",
+      a.EQUIP_NO as "equipNo",
+      b.EQUIP_NAME as "equipNm"
+    FROM TB_M1_CMAP_LORA a
+    LEFT JOIN TB_EQUIP_INFO_BASE b ON a.EQUIP_NO = b.EQUIP_NO
+    ORDER BY a.DEV_EUI
+
+site_list:
   desc:
     params: |
       siteSq(str)
     result: |
-      사이트 목록 조회
+      사이트 목록 조회(scco_list)
   query: |
     SELECT
       site_sq as "siteSq",
@@ -93,12 +126,12 @@ equip_wway_list:
       AND site_sq = :siteSq
     ORDER BY equip_nm
 
-info_look_rsvr:
+equip_rsvr_info:
   desc:
     params: |
       equipSq(str)
     result: |
-      저수지 용량 정보
+      저수지 용량 정보(info_look_rsvr)
   query: |
     SELECT
       equip_sq as "equipSq",
@@ -116,35 +149,6 @@ info_look_rsvr:
       reg_c3 as "regC3"
     FROM VI_SV_INFO_LOOK_RSVR
     WHERE EQUIP_SQ = :equipSq
-
-admin_list:
-  desc:
-    params: |
-      siteSq(str)
-    result: |
-      관리자 목록
-  query: |
-    SELECT
-      a.ADMIN_SQ as "adminSq",
-      a.EQUIP_NO as "equipNo",
-      c.EQUIP_NAME as "equipNm",
-      c.EQUIP_STANDARD_CODE as "stdCode",
-      a.ADMIN_NM as "adminNm",
-      a.ADMIN_PHONE as "adminPhone",
-      a.SEND_CD as "sendCd",
-      a.SITE_SQ as "siteSq",
-      b.FLOOD as "flood",
-      b.DROUGHT as "drought",
-      e.OBS_WLVL as "obsWlvl",
-      e.OBS_RATIO as "obsRatio",
-      a.INS_DT as "insDt",
-      a.UPD_DT as "updDt"
-    FROM TB_M1_INFO_ADMIN a
-    JOIN TB_EQUIP_INFO_BASE c ON c.EQUIP_NO = a.EQUIP_NO
-    LEFT JOIN TB_M1_SMS_SETTING b ON a.EQUIP_NO = b.EQUIP_NO AND a.SITE_SQ = b.SITE_SQ
-    LEFT JOIN TB_M1_MEAS_RSVR_NOW e ON e.EQUIP_NO = c.EQUIP_NO
-    WHERE a.SITE_SQ = :siteSq
-    ORDER BY a.EQUIP_NO
 
 sms_setting:
   desc:
@@ -225,12 +229,12 @@ rscvr_raw:
       AND a.OBS_DATE < to_date(:baseDate, 'yyyymmdd') + 1
     ORDER BY a.OBS_DATE DESC
 
-point_list2:
+equip_rsvr_detail_list:
   desc:
     params: |
       groupSq(str)
     result: |
-      상세 설비 및 측정 정보
+      상세 설비 및 측정 정보(point2_list)
   query: |
     SELECT *
     FROM TB_EQUIP_INFO_BASE_LORA a
@@ -242,45 +246,12 @@ point_list2:
     WHERE e.GROUP_SQ = :groupSq
     ORDER BY b.EQUIP_NO
 
-site_list:
-  desc:
-    params: |
-      없음
-    result: |
-      사이트 목록
-  query: |
-    SELECT *
-    FROM TB_M1_INFO_SITE_BASE
-
-lora_list:
-  desc:
-    params: |
-      없음
-    result: |
-      LoRa 정보 목록
-  query: |
-    SELECT
-      a.DEV_EUI as "devEui",
-      a.APP_EUI as "appEui",
-      a.SUBS_IP as "ip",
-      a.DOWN_LINK_GET_IP as "getIp",
-      a.DOWN_LINK_SET_IP as "setIp",
-      a.UKEY as "ukey",
-      a.DKEY as "dkey",
-      a.OM2M_REG_STATE as "om2mRegSt",
-      a.SUBS_LAST_RSM as "lastRms",
-      a.EQUIP_NO as "equipNo",
-      b.EQUIP_NAME as "equipNm"
-    FROM TB_M1_CMAP_LORA a
-    LEFT JOIN TB_EQUIP_INFO_BASE b ON a.EQUIP_NO = b.EQUIP_NO
-    ORDER BY a.DEV_EUI
-
-is_lora_mapped:
+lora_cmap_info:
   desc:
     params: |
       equipNo(str)
     result: |
-      LoRa 매핑 여부
+      LoRa 매핑 여부(info_map_lora)
   query: |
     SELECT
       APP_EUI as "eAppEui",

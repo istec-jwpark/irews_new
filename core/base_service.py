@@ -27,7 +27,6 @@ class Service:
             2. query 이면 query 수행처리
             3. def 이면 service 함수 처리 결과(query, params)를 이용 수행 처리
         """
-        # _type = 
         with db_manager.get_connection() as conn:
             with conn.cursor() as cursor:
                 _type = QueryLoader.get_type(category, query_id)

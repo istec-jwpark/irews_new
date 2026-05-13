@@ -1,9 +1,0 @@
--- key: rsvr.list_by_id
-SELECT SELECT * FROM VI_SV_INFO_EQUIP_RSVR
-WHERE SITE_SQ = :site_sq
-ORDER BY EQUIP_NM
-
--- key: user.list
-SELECT USER_ID, USER_NAME
-FROM USERS
-ORDER BY USER_ID

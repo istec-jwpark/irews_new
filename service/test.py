@@ -1,7 +1,10 @@
 from loguru import logger
-
+"""
+    input : parameters
+    output : query string, parameters
+"""
 def test(params:dict) -> (str,dict):
-    print("test service")
+    logger.info("### test service")
     _params = params.copy()
     _siteSq = ""
     _activeCode = ""

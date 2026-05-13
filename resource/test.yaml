@@ -11,3 +11,17 @@ equip_list:
     WHERE SITE_SQ = :siteSq AND ACTIVE_CODE = :activeCode
   def : |
     test.test
+
+update_equip_status:
+  desc:
+    params: |
+      equipNo(number)
+      activeCode(str)
+    result: |
+      장비 상태코드(ACTIVE_CODE) 업데이트
+  query: |
+    UPDATE TB_EQUIP_INFO_BASE
+    SET
+      ACTIVE_CODE = :activeCode
+    WHERE
+      EQUIP_NO = :equipNo

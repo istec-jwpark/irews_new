@@ -5,11 +5,13 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from loguru import logger
 from passlib.context import CryptContext
+from core.config import settings
+
 
 # 실제로는 env에서 가져올 것
-SECRET_KEY = "your-ultra-secure-secret-key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
@@ -69,6 +71,5 @@ def verify_password_simple(plain_password: str, hashed_password: str):
     if input_hash == hashed_password:
         logger.success("비밀번호 일치 (SHA-256)")
         return True
-    
     logger.warning("비밀번호 불일치")
     return False

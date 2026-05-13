@@ -1,0 +1,167 @@
+set_point_location:
+  desc:
+    params: |
+      pointSq(number)
+      locLon(number)
+      locLat(number)
+    result: |
+      포인트 위치(경도/위도) 업데이트
+  query: |
+    UPDATE tb_m1_info_point_base
+    SET
+      loc_lon = :locLon,
+      loc_lat = :locLat
+    WHERE
+      point_sq = :pointSq
+
+save_look_rsvr:
+  desc:
+    params: |
+      equipSq(number)
+      maxLvl(number)
+      minLvl(number)
+      regC0(number)
+      regC1(number)
+      regC2(number)
+      regC3(number)
+    result: |
+      저수지 룩업(보정) 정보 저장(업데이트)
+  query: |
+    UPDATE VI_SV_INFO_LOOK_RSVR
+    SET
+      reg_type = '03',
+      lvl_max  = :maxLvl,
+      lvl_min  = :minLvl,
+      reg_c0   = :regC0,
+      reg_c1   = :regC1,
+      reg_c2   = :regC2,
+      reg_c3   = :regC3
+    WHERE
+      EQUIP_SQ = :equipSq
+
+insert_admin_list:
+  desc:
+    params: |
+      equipNo(number)
+      adminNm(str)
+      adminPhone(str)
+      siteSq(number)
+    result: |
+      관리자 정보 신규 등록
+  query: |
+    INSERT INTO TB_M1_INFO_ADMIN (
+      EQUIP_NO,
+      ADMIN_NM,
+      ADMIN_PHONE,
+      SITE_SQ
+    ) VALUES (
+      :equipNo,
+      :adminNm,
+      :adminPhone,
+      :siteSq
+    )
+
+update_admin:
+  desc:
+    params: |
+      siteSq(number)
+      equipNo(number)
+      sendCd(str)
+    result: |
+      관리자 발송코드(SEND_CD) 업데이트
+  query: |
+    UPDATE TB_M1_INFO_ADMIN
+    SET
+      SEND_CD = :sendCd
+    WHERE
+      SITE_SQ = :siteSq
+      AND EQUIP_NO = :equipNo
+
+delete_admin:
+  desc:
+    params: |
+      adminSq(number)
+    result: |
+      관리자 정보 삭제
+  query: |
+    DELETE FROM TB_M1_INFO_ADMIN
+    WHERE
+      admin_sq = :adminSq
+
+insert_sms_setting:
+  desc:
+    params: |
+      equipNo(number)
+      siteSq(number)
+      flood(str|number)
+      drought(str|number)
+    result: |
+      SMS 설정 신규 등록
+  query: |
+    INSERT INTO VI_M1_SMS_SETTING (
+      EQUIP_NO,
+      SITE_SQ,
+      FLOOD,
+      DROUGHT
+    ) VALUES (
+      :equipNo,
+      :siteSq,
+      :flood,
+      :drought
+    )
+
+update_lora_mapping:
+  desc:
+    params: |
+      equipNo(number)
+      appEui(str)
+      devEui(str)
+    result: |
+      LoRa 매핑 업데이트(APP_EUI+DEV_EUI 기준으로 EQUIP_NO 갱신)
+  query: |
+    UPDATE TB_M1_CMAP_LORA
+    SET
+      EQUIP_NO = :equipNo,
+      UPD_DT   = SYSDATE
+    WHERE
+      APP_EUI = :appEui
+      AND DEV_EUI = :devEui
+
+insert_lora:
+  desc:
+    params: |
+      appEui(str)
+      devEui(str)
+      ukey(str)
+    result: |
+      LoRa 단말 신규 등록(UKEY/DKEY 동일값 저장)
+  query: |
+    INSERT INTO TB_M1_CMAP_LORA (APP_EUI, DEV_EUI, UKEY, DKEY, INS_DT)
+    VALUES (
+      :appEui,
+      :devEui,
+      :ukey,
+      :ukey,
+      SYSDATE
+    )
+
+update_om2m_state:
+  desc:
+    params: |
+      appEui(str)
+      devEui(str)
+      om2mRegSt(str)
+      lasRsm(str)   # 원본 파라미터명이 lasRsm(오타 가능) 그대로 반영
+      subsIp(str)
+    result: |
+      OM2M 등록상태/최근 RSM/IP 업데이트
+  query: |
+    UPDATE TB_M1_CMAP_LORA
+    SET
+      om2m_reg_state = :om2mRegSt,
+      subs_last_rsm  = :lasRsm,
+      SUBS_IP        = :subsIp,
+      upd_dt         = SYSDATE
+    WHERE
+      app_eui = :appEui
+      AND dev_eui = :devEui

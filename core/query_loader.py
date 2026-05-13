@@ -35,12 +35,16 @@ class QueryLoader:
 
     @classmethod
     def desc(cls, category: str, key: str) -> str:
-        return cls._queries.get(category, {}).get(key,{}).get('desc')
+        _desc = cls._queries.get(category, {}).get(key,{}).get('desc')
+        _desc['type'] = cls.get_type(category,key)
+        return _desc
     
     @classmethod
     def list(cls):
         _list = {}
         for category in cls._queries:
             if category != 'auth':
-                _list[category] = list(cls._queries.get(category,{}).keys())
+                _category = cls._queries.get(category,{})
+                if _category:
+                    _list[category] = list(_category.keys())
         return _list

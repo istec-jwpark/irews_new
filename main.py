@@ -21,13 +21,12 @@ async def lifespan(app: FastAPI):
     # [Startup] 앱 시작 시 실행
     db_manager.initialize()
     QueryLoader.load_queries()
-    logger.info(QueryLoader.get_query("equip","rsvr_list_by_site_sq"))
+    logger.info(QueryLoader.get_query("equip","point_base_list"))
     ServiceLoader.load_services()
     logger.info(ServiceLoader.run("test.test",{"a":"a"}))
     # FilterLoader.load_filter()
     # logger.info(FilterLoader.run("equip","test",{"a":"a"}))
     logger.info("🚀 Database pool initialized, queries/services loaded.")
-
     yield
     # [Shutdown] 앱 종료 시 실행
     db_manager.close()
@@ -57,9 +56,9 @@ logger.info("app", app)
 # Router 등록
 app.include_router(auth_api.router)
 app.include_router(base_api.router)
-app.include_router(map_api.router)
-app.include_router(equip_api.router)
+# app.include_router(map_api.router)
+# app.include_router(equip_api.router)
 
 if __name__ == "__main__":
     # Spring Boot처럼 실행
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, timeout_keep_alive=60)
