@@ -3,7 +3,8 @@ from fastapi import FastAPI, Request
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
-from core.database import db_manager
+# from core.database import db_manager
+from core.adatabase import db_manager
 from core.query_loader import QueryLoader
 from core.service_loader import ServiceLoader
 # from core.filter_loader import FilterLoader
@@ -19,7 +20,7 @@ print("lifespan")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # [Startup] 앱 시작 시 실행
-    db_manager.initialize()
+    await db_manager.initialize()
     QueryLoader.load_queries()
     logger.info(QueryLoader.get_query("equip","point_base_list"))
     ServiceLoader.load_services()
@@ -29,7 +30,7 @@ async def lifespan(app: FastAPI):
     logger.info("🚀 Database pool initialized, queries/services loaded.")
     yield
     # [Shutdown] 앱 종료 시 실행
-    db_manager.close()
+    await db_manager.close()
     logger.info("🛑 Database pool closed.")
 
 app = FastAPI(title=settings.APP_NAME, lifespan=lifespan)

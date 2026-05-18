@@ -1,9 +1,9 @@
 from typing import List, Dict, Any, Optional
-from core.database import db_manager
+from core.old.database import db_manager
 from core.query_loader import QueryLoader
 from core.filter_loader import FilterLoader
 from core.service_loader import ServiceLoader
-from core.query_executor import QueryExecutor
+from core.old.query_executor import QueryExecutor
 from loguru import logger
 
 class Service:

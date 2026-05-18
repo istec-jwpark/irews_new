@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 from loguru import logger
-from core.base_service import Service
+from core.abase_service import AService as Service
 from core.jwt_handler import create_access_token, verify_password_simple, get_current_user
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -14,7 +14,7 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     _user_pwd = form_data.password
     _service = Service()
     params = {'user_id':_user_id}
-    _user_info = _service.find_one('auth','auth_info',params)
+    _user_info = await _service.find_one('auth','auth_info',params)
     logger.info(f'****** DB User Info({_user_id}) : {_user_info}')
     if not _user_info:
         logger.warning(f"Login failed: User {_user_id} not found.")
@@ -31,9 +31,9 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/me")
-def read_me(user_id: str = Depends(get_current_user)):
+async def read_me(user_id: str = Depends(get_current_user)):
     _service = Service()
     params = {'user_id':user_id}
-    _user_info = _service.find_one('user','get_user',params)
+    _user_info = await _service.find_one('user','get_user',params)
     logger.info(f'****** DB User Info({user_id}) : {_user_info}')
     return _user_info

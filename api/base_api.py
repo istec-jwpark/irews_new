@@ -1,9 +1,8 @@
 from fastapi import Request, APIRouter, Depends
 from loguru import logger
-from core.base_service import Service
+from core.abase_service import AService as Service
 from core.query_loader import QueryLoader
 from core.jwt_handler import get_current_user
-# from util.security import require_auth
 
 router = APIRouter(prefix="/api", tags=["base_api"])
 
@@ -25,7 +24,7 @@ def api_key_info(category:str, key:str):
     summary="api category의 key에 대한 결과 조회",
     description="Example: /api/category/key?site_sq=1&user_id=a"
 )
-def select(category:str, key:str, request:Request):#, user_id: str = Depends(get_current_user)):
+async def select(category:str, key:str, request:Request):#, user_id: str = Depends(get_current_user)):
     '''category(쿼리맵 파일명), key(쿼리 ID), 파라미터를 이용하여 DB 조회를 통해 결과를 읽어온다
      Example: /api/category/key?site_sq=1&user_id=a'''
     if category == 'auth':
@@ -35,7 +34,7 @@ def select(category:str, key:str, request:Request):#, user_id: str = Depends(get
     # print(param)
     logger.info(param)
     _service = Service()
-    return _service.find_list(category,key,param)
+    return await _service.find_list(category,key,param)
 
 
 @router.post("/{category}/{key}",
@@ -48,5 +47,5 @@ async def execute(category: str, key: str, data: dict):
     logger.info(f"###### /api/{category}/{key} ######")
     logger.info(data)
     _service = Service()
-    result = _service.do_execute(category, key, data)
+    result = await _service.do_execute(category, key, data)
     return result
