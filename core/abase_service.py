@@ -16,7 +16,12 @@ class AService:
         if not sql:
             raise ValueError(f"Query ID '{query_id}' not found in category '{category}'")
         return sql
-    
+    async def find_one(self, category: str, query_id: str, params: Dict[str, Any] = None) -> Optional[Dict[str, Any]]:
+        logger.info(f"****** params : {params}")
+        async with db_manager.get_connection() as conn:
+            async with conn.cursor() as cursor:
+                return await AQueryExecutor.fetch_one(cursor, self._get_sql(category,query_id), params)
+
     async def find_list(self, category: str, query_id: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         try:
             async with db_manager.get_connection() as conn:

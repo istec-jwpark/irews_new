@@ -14,7 +14,10 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     _user_pwd = form_data.password
     _service = Service()
     params = {'user_id':_user_id}
-    _user_info = await _service.find_one('auth','auth_info',params)
+    _result = await _service.find_one('auth','auth_info',params)
+    _user_info = None
+    if _result['success']:
+        _user_info = _result['data']
     logger.info(f'****** DB User Info({_user_id}) : {_user_info}')
     if not _user_info:
         logger.warning(f"Login failed: User {_user_id} not found.")
